@@ -858,7 +858,7 @@ async function confirmSelectedSales() {
                         product_name: ingredientName,
                         quantity: neededPerUnit,
                         description: `Venta: ${recipeName} (por ${userName})`,
-                        user_id: userId || 'Empleado' // <-- Esta es la línea clave
+                        user_id: userId 
                     });
                 }
             }
