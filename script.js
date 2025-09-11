@@ -983,15 +983,10 @@ function updateReports() {
             saleDate.getFullYear() === today.getFullYear()
         );
     });
-<<<<<<< HEAD
 
     const adminSales = allTodaySales.filter(s => s.user === 'Administrador');
     const userSales = allTodaySales.filter(s => s.user === 'Empleado');
 
-=======
-    const adminSales = allTodaySales ; //.filter(s => s.user  === '00293040-9565-4575-b2b3-aea3b20c4bd9');
-    const userSales = allTodaySales; //.filter(s => s.user   === '9cd71848-e9ec-4a0b-bf36-52e0905c1376');
->>>>>>> 8c202fd93029bf7772efb1acda16ddd53ebf1243
     const container = document.getElementById('todaySales');
     if (!container) return;
 
@@ -1056,6 +1051,7 @@ function updateReports() {
         }
     }
 }
+
 // === Mostrar alertas ===
 function showAlert(type, message) {
     const alert = document.createElement('div');
