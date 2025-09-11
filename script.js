@@ -963,6 +963,7 @@ function updateConfirmButtonProgress(step, total) {
         confirmButton.innerHTML = `🔄 ${percentage}%`;
     }
 }
+
 // === Actualizar reportes ===
 function updateReports() {
     const today = new Date();
@@ -1056,7 +1057,7 @@ function updateReports() {
 
     html += '</div>';
     container.innerHTML = html;
-}
+
     // Historial de movimientos
     const historyContainer = document.getElementById('movementHistory');
     if (historyContainer) {
