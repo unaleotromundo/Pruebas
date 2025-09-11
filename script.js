@@ -842,9 +842,11 @@ async function confirmSelectedSales() {
             // Preparar ventas (una por cada unidad vendida)
             for (let i = 0; i < qty; i++) {
                 salesData.push({
+                    date: dateTimeStr,
                     product_name: recipeName,
                     price: recipe.price,
-                    user_id: userId
+                    user_id: userId,
+                    
                 });
 
                 // Preparar movimientos y actualizaciones de stock
