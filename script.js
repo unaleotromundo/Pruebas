@@ -966,7 +966,6 @@ function updateConfirmButtonProgress(step, total) {
 // === Actualizar reportes ===
 function updateReports() {
     const today = new Date();
-
     const allTodaySales = sales.filter(s => {
         const [datePart] = s.date.split(' ');
         const [day, month, year] = datePart.split('/');
@@ -979,46 +978,85 @@ function updateReports() {
             saleDate.getFullYear() === today.getFullYear()
         );
     });
-
     const adminSales = allTodaySales.filter(s => s.user === 'Administrador');
     const userSales = allTodaySales.filter(s => s.user === 'Empleado');
-
     const container = document.getElementById('todaySales');
     if (!container) return;
 
-    let html = '';
+    // ✅ Estilo mejorado con clases CSS
+    let html = '<div class="sales-report-container">';
 
+    // ✅ Tabla de ventas del administrador
     if (adminSales.length > 0) {
         const totalAdmin = adminSales.reduce((sum, s) => sum + s.price, 0);
-        html += '<h3>💼 Ventas del Administrador</h3>';
-        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
+        html += `
+            <div class="report-section">
+                <h3 class="section-title"><span class="icon">💼</span> Ventas del Administrador</h3>
+                <div class="table-wrapper">
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th><span class="icon">🍔</span> Producto</th>
+                                <th><span class="icon">💰</span> Precio</th>
+                                <th><span class="icon">⏱️</span> Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
         adminSales.forEach(s => {
             const time = s.date.split(' ')[1];
             html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
         });
-        html += `</table><p><strong>Total: $${totalAdmin}</strong></p>`;
+        html += `
+                        </tbody>
+                    </table>
+                </div>
+                <div class="total-row"><strong>Total: $${totalAdmin}</strong></div>
+            </div>
+        `;
     }
 
+    // ✅ Tabla de ventas del empleado
     if (userSales.length > 0) {
         const totalUser = userSales.reduce((sum, s) => sum + s.price, 0);
-        html += '<h3>👷 Ventas del Empleado</h3>';
-        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
+        html += `
+            <div class="report-section">
+                <h3 class="section-title"><span class="icon">👷</span> Ventas del Empleado</h3>
+                <div class="table-wrapper">
+                    <table class="sales-table">
+                        <thead>
+                            <tr>
+                                <th><span class="icon">🍔</span> Producto</th>
+                                <th><span class="icon">💰</span> Precio</th>
+                                <th><span class="icon">⏱️</span> Hora</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+        `;
         userSales.forEach(s => {
             const time = s.date.split(' ')[1];
             html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
         });
-        html += `</table><p><strong>Total: $${totalUser}</strong></p>`;
+        html += `
+                        </tbody>
+                    </table>
+                </div>
+                <div class="total-row"><strong>Total: $${totalUser}</strong></div>
+            </div>
+        `;
     }
 
+    // ✅ Total general
     const totalGeneral = allTodaySales.reduce((sum, s) => sum + s.price, 0);
-    html += `<p style="text-align:center; font-size:1.3em; margin-top:20px;"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
-
     if (allTodaySales.length === 0) {
-        html = '<p>No hay ventas hoy 📊</p>';
+        html += '<p class="no-sales">No hay ventas hoy 📊</p>';
+    } else {
+        html += `<p class="total-general"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
     }
 
+    html += '</div>';
     container.innerHTML = html;
-
+}
     // Historial de movimientos
     const historyContainer = document.getElementById('movementHistory');
     if (historyContainer) {
