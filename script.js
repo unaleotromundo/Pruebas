@@ -1044,7 +1044,9 @@ function updateReports() {
                 </div>
                 <div class="total-row"><strong>Total: $${totalUser}</strong></div>
             </div>
-        `;
+     `;
+}
+
 // === Actualizar reportes ===
 function updateReports() {
     const today = new Date();
