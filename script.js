@@ -844,7 +844,8 @@ async function confirmSelectedSales() {
                 salesData.push({
                     product_name: recipeName,
                     price: recipe.price,
-                    user_id: userId
+                    user_id: userId,
+                    created_at: new Date().toISOString()
                 });
 
                 // Preparar movimientos y actualizaciones de stock
@@ -859,7 +860,8 @@ async function confirmSelectedSales() {
                         product_name: ingredientName,
                         quantity: neededPerUnit,
                         description: `Venta: ${recipeName} (por ${userName})`,
-                        user_id: userId || 'Empleado' // <-- Esta es la línea clave
+                        user_id: userId || 'Empleado', // <-- Esta es la línea clave
+                        created_at: new Date().toISOString()
                     });
                 }
             }
