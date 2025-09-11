@@ -147,7 +147,7 @@ async function loadDataFromSupabase() {
                 product: s.product_name,
                 price: s.price,
                 user: s.user_id,
-                username: s.username; 
+                username: s.username 
             }));
         }
         console.log("✅ Ventas cargadas:", sales.length);
