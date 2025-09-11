@@ -842,6 +842,7 @@ async function confirmSelectedSales() {
             // Preparar ventas (una por cada unidad vendida)
             for (let i = 0; i < qty; i++) {
                 salesData.push({
+                    created_at: new Date().ToString(),
                     product_name: recipeName,
                     price: recipe.price,
                     user_id: userId
