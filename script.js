@@ -133,10 +133,7 @@ async function loadDataFromSupabase() {
         console.log("💰 Cargando ventas...");
         const { data: salesData, error: salesError } = await supabase
             .from('sales')
-            .select(`
-                *,
-                users(username)
-            `);
+            .select('*, users(username)');
         if (salesError) throw salesError;
         sales = [];
         if (salesData) {
