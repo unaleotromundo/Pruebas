@@ -969,129 +969,88 @@ function updateConfirmButtonProgress(step, total) {
 function updateReports() {
     const today = new Date();
     const allTodaySales = sales.filter(s => {
-        const [datePart] = s.date.split(' ');
-        const [day, month, year] = datePart.split('/');
-        const saleDate = new Date(
-            `${year.length === 2 ? '20' + year : year}-${month}-${day}`
-        );
+        // ✅ Las fechas vienen desde Supabase como: "2025-04-05 10:30:22.123"
+        const [datePart, timePart] = s.date.split(' '); // Separa fecha y hora
+        const [year, month, day] = datePart.split('-'); // ✅ Ahora usamos guiones, no barras
+
+        // Crear objeto Date válido
+        const saleDate = new Date(`${year}-${month}-${day}T${timePart}`);
+
+        // Comparar solo día, mes, año
         return (
             saleDate.getDate() === today.getDate() &&
             saleDate.getMonth() === today.getMonth() &&
             saleDate.getFullYear() === today.getFullYear()
         );
     });
-    const adminSales = allTodaySales.filter(s => s.users.username  === 'Administrador');
-    const userSales = allTodaySales.filter(s => s.users.username   === 'Empleado');
+
+    const adminSales = allTodaySales.filter(s => s.user === 'Administrador');
+    const userSales = allTodaySales.filter(s => s.user === 'Empleado');
+
     const container = document.getElementById('todaySales');
     if (!container) return;
 
-    // ✅ Estilo mejorado con clases CSS
-    let html = '<div class="sales-report-container">';
+    let html = '';
 
-    // ✅ Tabla de ventas del administrador
     if (adminSales.length > 0) {
         const totalAdmin = adminSales.reduce((sum, s) => sum + s.price, 0);
-        html += `
-            <div class="report-section">
-                <h3 class="section-title"><span class="icon">💼</span> Ventas del Administrador</h3>
-                <div class="table-wrapper">
-                    <table class="sales-table">
-                        <thead>
-                            <tr>
-                                <th><span class="icon">🍔</span> Producto</th>
-                                <th><span class="icon">💰</span> Precio</th>
-                                <th><span class="icon">⏱️</span> Hora</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-        `;
+        html += '<h3>💼 Ventas del Administrador</h3>';
+        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
         adminSales.forEach(s => {
             const time = s.date.split(' ')[1];
             html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
         });
-        html += `
-                        </tbody>
-                    </table>
-                </div>
-                <div class="total-row"><strong>Total: $${totalAdmin}</strong></div>
-            </div>
-        `;
+        html += `</table><p><strong>Total: $${totalAdmin}</strong></p>`;
     }
 
-    // ✅ Tabla de ventas del empleado
     if (userSales.length > 0) {
         const totalUser = userSales.reduce((sum, s) => sum + s.price, 0);
-        html += `
-            <div class="report-section">
-                <h3 class="section-title"><span class="icon">👷</span> Ventas del Empleado</h3>
-                <div class="table-wrapper">
-                    <table class="sales-table">
-                        <thead>
-                            <tr>
-                                <th><span class="icon">🍔</span> Producto</th>
-                                <th><span class="icon">💰</span> Precio</th>
-                                <th><span class="icon">⏱️</span> Hora</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-        `;
+        html += '<h3>👷 Ventas del Empleado</h3>';
+        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
         userSales.forEach(s => {
             const time = s.date.split(' ')[1];
             html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
         });
-        html += `
-                        </tbody>
-                    </table>
-                </div>
-                <div class="total-row"><strong>Total: $${totalUser}</strong></div>
-            </div>
-        `;
+        html += `</table><p><strong>Total: $${totalUser}</strong></p>`;
     }
 
-    // ✅ Total general
     const totalGeneral = allTodaySales.reduce((sum, s) => sum + s.price, 0);
+    html += `<p style="text-align:center; font-size:1.3em; margin-top:20px;"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
+
     if (allTodaySales.length === 0) {
-        html += '<p class="no-sales">No hay ventas hoy 📊</p>';
-    } else {
-        html += `<p class="total-general"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
+        html = '<p>No hay ventas hoy 📊</p>';
     }
 
-    html += '</div>';
     container.innerHTML = html;
 
-// Historial de movimientos
-const historyContainer = document.getElementById('movementHistory');
-if (historyContainer) {
-    if (movements.length === 0) {
-        historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
-    } else {
-        // ✅ Nueva cabecera con columna de precio unitario
-        let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>💰 Precio Unit.</th><th>📝 Descripción</th></tr>';
-        movements.slice(-20).reverse().forEach(mov => {
-            const escapedProduct = escapeHtml(mov.product);
-            const escapedDesc = escapeHtml(mov.description);
-            const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
-            
-            // ✅ Obtener precio unitario del stock, si existe
-            const productPrice = stock[mov.product]?.pricePerUnit || 0;
-            
-            histHtml += `
-                <tr>
-                    <td style="font-size:0.9em;">${mov.date}</td>
-                    <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
-                    <td>${escapedProduct}</td>
-                    <td>${mov.quantity}</td>
-                    <td class="price-cell">$${productPrice.toFixed(2)}</td>
-                    <td style="font-size:0.9em;">${escapedDesc}</td>
-                </tr>
-            `;
-        });
-        histHtml += '</table>';
-        historyContainer.innerHTML = histHtml;
+    // Historial de movimientos (sin cambios)
+    const historyContainer = document.getElementById('movementHistory');
+    if (historyContainer) {
+        if (movements.length === 0) {
+            historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
+        } else {
+            let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>💰 Precio Unit.</th><th>📝 Descripción</th></tr>';
+            movements.slice(-20).reverse().forEach(mov => {
+                const escapedProduct = escapeHtml(mov.product);
+                const escapedDesc = escapeHtml(mov.description);
+                const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
+                const productPrice = stock[mov.product]?.pricePerUnit || 0;
+                histHtml += `
+                    <tr>
+                        <td style="font-size:0.9em;">${mov.date}</td>
+                        <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
+                        <td>${escapedProduct}</td>
+                        <td>${mov.quantity}</td>
+                        <td class="price-cell">$${productPrice.toFixed(2)}</td>
+                        <td style="font-size:0.9em;">${escapedDesc}</td>
+                    </tr>
+                `;
+            });
+            histHtml += '</table>';
+            historyContainer.innerHTML = histHtml;
+        }
     }
 }
-}
-
 // === Mostrar alertas ===
 function showAlert(type, message) {
     const alert = document.createElement('div');
