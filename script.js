@@ -979,8 +979,8 @@ function updateReports() {
             saleDate.getFullYear() === today.getFullYear()
         );
     });
-    const adminSales = allTodaySales.filter(s => s.user === 'Administrador');
-    const userSales = allTodaySales.filter(s => s.user === 'Empleado');
+    const adminSales = allTodaySales; //filter(s => s.user === 'Administrador');
+    const userSales = allTodaySales; // .filter(s => s.user === 'Empleado');
     const container = document.getElementById('todaySales');
     if (!container) return;
 
