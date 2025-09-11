@@ -842,6 +842,7 @@ async function confirmSelectedSales() {
             // Preparar ventas (una por cada unidad vendida)
             for (let i = 0; i < qty; i++) {
                 salesData.push({
+                    date: new Date(s.created_at).toLocaleString('es-AR'),
                     product_name: recipeName,
                     price: recipe.price,
                     user_id: userId
