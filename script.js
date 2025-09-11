@@ -1044,7 +1044,8 @@ function updateReports() {
                 </div>
                 <div class="total-row"><strong>Total: $${totalUser}</strong></div>
             </div>
-        `;// === Actualizar reportes ===
+        `;
+// === Actualizar reportes ===
 function updateReports() {
     const today = new Date();
     const allTodaySales = sales.filter(s => {
