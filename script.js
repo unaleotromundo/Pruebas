@@ -1059,30 +1059,36 @@ function updateReports() {
     container.innerHTML = html;
 
     // Historial de movimientos
-    const historyContainer = document.getElementById('movementHistory');
-    if (historyContainer) {
-        if (movements.length === 0) {
-            historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
-        } else {
-            let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>📝 Descripción</th></tr>';
-            movements.slice(-20).reverse().forEach(mov => {
-                const escapedProduct = escapeHtml(mov.product);
-                const escapedDesc = escapeHtml(mov.description);
-                const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
-                histHtml += `
-                    <tr>
-                        <td style="font-size:0.9em;">${mov.date}</td>
-                        <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
-                        <td>${escapedProduct}</td>
-                        <td>${mov.quantity}</td>
-                        <td style="font-size:0.9em;">${escapedDesc}</td>
-                    </tr>
-                `;
-            });
-            histHtml += '</table>';
-            historyContainer.innerHTML = histHtml;
-        }
+const historyContainer = document.getElementById('movementHistory');
+if (historyContainer) {
+    if (movements.length === 0) {
+        historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
+    } else {
+        // ✅ Nueva cabecera con columna de precio unitario
+        let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>💰 Precio Unit.</th><th>📝 Descripción</th></tr>';
+        movements.slice(-20).reverse().forEach(mov => {
+            const escapedProduct = escapeHtml(mov.product);
+            const escapedDesc = escapeHtml(mov.description);
+            const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
+            
+            // ✅ Obtener precio unitario del stock, si existe
+            const productPrice = stock[mov.product]?.pricePerUnit || 0;
+            
+            histHtml += `
+                <tr>
+                    <td style="font-size:0.9em;">${mov.date}</td>
+                    <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
+                    <td>${escapedProduct}</td>
+                    <td>${mov.quantity}</td>
+                    <td class="price-cell">$${productPrice.toFixed(2)}</td>
+                    <td style="font-size:0.9em;">${escapedDesc}</td>
+                </tr>
+            `;
+        });
+        histHtml += '</table>';
+        historyContainer.innerHTML = histHtml;
     }
+}
 }
 
 // === Mostrar alertas ===
