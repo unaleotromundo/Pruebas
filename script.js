@@ -134,8 +134,8 @@ async function loadDataFromSupabase() {
         const { data: salesData, error: salesError } = await supabase
             .from('sales')
             .select(`
-                *, // Selecciona todas las columnas de la tabla 'sales'
-                users(username) // Selecciona el 'username' de la tabla 'users'
+                *,
+                users(username)
             `);
         if (salesError) throw salesError;
         sales = [];
