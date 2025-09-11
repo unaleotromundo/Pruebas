@@ -1057,7 +1057,6 @@ function updateReports() {
 
     html += '</div>';
     container.innerHTML = html;
-    
 }
 
 // === Mostrar alertas ===
