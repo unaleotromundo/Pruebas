@@ -1044,7 +1044,52 @@ function updateReports() {
                 </div>
                 <div class="total-row"><strong>Total: $${totalUser}</strong></div>
             </div>
-        `;
+        `;// === Actualizar reportes ===
+function updateReports() {
+    const today = new Date();
+    const allTodaySales = sales.filter(s => {
+        const [datePart] = s.date.split(' ');
+        const [day, month, year] = datePart.split('/');
+        const saleDate = new Date(
+            `${year.length === 2 ? '20' + year : year}-${month}-${day}`
+        );
+        return (
+            saleDate.getDate() === today.getDate() &&
+            saleDate.getMonth() === today.getMonth() &&
+            saleDate.getFullYear() === today.getFullYear()
+        );
+    });
+    const adminSales = allTodaySales.filter(s => s.user === 'Administrador');
+    const userSales = allTodaySales.filter(s => s.user === 'Empleado');
+    const container = document.getElementById('todaySales');
+    if (!container) return;
+    let html = '';
+    if (adminSales.length > 0) {
+        const totalAdmin = adminSales.reduce((sum, s) => sum + s.price, 0);
+        html += '<h3>💼 Ventas del Administrador</h3>';
+        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
+        adminSales.forEach(s => {
+            const time = s.date.split(' ')[1];
+            html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
+        });
+        html += `</table><p><strong>Total: $${totalAdmin}</strong></p>`;
+    }
+    if (userSales.length > 0) {
+        const totalUser = userSales.reduce((sum, s) => sum + s.price, 0);
+        html += '<h3>👷 Ventas del Empleado</h3>';
+        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
+        userSales.forEach(s => {
+            const time = s.date.split(' ')[1];
+            html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
+        });
+        html += `</table><p><strong>Total: $${totalUser}</strong></p>`;
+    }
+    const totalGeneral = allTodaySales.reduce((sum, s) => sum + s.price, 0);
+    html += `<p style="text-align:center; font-size:1.3em; margin-top:20px;"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
+    if (allTodaySales.length === 0) {
+        html = '<p>No hay ventas hoy 📊</p>';
+    }
+    container.innerHTML = html;
     }
 
     // ✅ Total general
@@ -1057,6 +1102,7 @@ function updateReports() {
 
     html += '</div>';
     container.innerHTML = html;
+    
 }
 
 // === Mostrar alertas ===
