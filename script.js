@@ -147,7 +147,7 @@ async function loadDataFromSupabase() {
                 product: s.product_name,
                 price: s.price,
                 user: s.user_id,
-                username: s.users.username; 
+                username: s.username; 
             }));
         }
         console.log("✅ Ventas cargadas:", sales.length);
@@ -984,8 +984,8 @@ function updateReports() {
             saleDate.getFullYear() === today.getFullYear()
         );
     });
-    const adminSales = allTodaySales.filter(s => s.users.username === 'Administrador');
-    const userSales = allTodaySales.filter(s => s.users.username === 'Empleado');
+    const adminSales = allTodaySales.filter(s => s.username === 'Administrador');
+    const userSales = allTodaySales.filter(s => s.username === 'Empleado');
     const container = document.getElementById('todaySales');
     if (!container) return;
 
