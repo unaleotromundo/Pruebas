@@ -712,18 +712,22 @@ function updateSalesButtons() {
     const container = document.getElementById('salesButtons');
     if (!container) return;
     container.innerHTML = '';
+
     if (Object.keys(recipes).length === 0) {
         container.innerHTML = '<div class="sale-btn" style="background:#95a5a6;cursor:not-allowed;">🍔 No hay recetas</div>';
         return;
     }
+
     for (let [name, recipe] of Object.entries(recipes)) {
         const button = document.createElement('button');
         button.className = 'sale-btn';
         button.dataset.name = name;
         button.dataset.action = 'add-to-sale';
         button.title = name;
+
         const canMake = checkCanMakeRecipe(name);
         const willExceed = selectedSales[name] && wouldExceedStock(name, selectedSales[name]);
+
         if (canMake && !willExceed) {
             button.innerHTML = `
                 <div class="button-content">
@@ -733,6 +737,7 @@ function updateSalesButtons() {
                 <span class="quantity-badge" style="display: none;"></span>
             `;
             button.style.position = 'relative';
+
             if (selectedSales[name] > 1) {
                 const badge = button.querySelector('.quantity-badge');
                 badge.textContent = `×${selectedSales[name]}`;
@@ -740,20 +745,16 @@ function updateSalesButtons() {
                 badge.classList.add('flash');
                 setTimeout(() => badge.classList.remove('flash'), 500);
             }
+
         } else {
-            // ✅ MODIFICACIÓN: Mostrar el nombre del combo en rojo en lugar de "Sin stock"
             button.disabled = true;
-            button.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
-            button.style.boxShadow = '0 5px 15px rgba(231, 76, 60, 0.3)';
-            button.innerHTML = `
-                ❌<br>
-                <span class="combo-name" style="color: white; font-weight: bold; font-size: 0.85em;">${escapeHtml(name)}</span><br>
-                <small style="color: rgba(255,255,255,0.8);">Agotado</small>
-            `;
+            button.innerHTML = `❌<br><small>Sin stock</small>`;
         }
+
         container.appendChild(button);
     }
 }
+
 // === Actualizar carrito flotante ===
 function updateFloatingCart() {
     if (!floatingCartItems) return;
@@ -962,172 +963,86 @@ function updateConfirmButtonProgress(step, total) {
         confirmButton.innerHTML = `🔄 ${percentage}%`;
     }
 }
-// === Actualizar reportes (CARGA DESDE SUPABASE) ===
-async function updateReports() {
-    if (!supabase) {
-        console.error("⛔ Supabase no está inicializado.");
-        return;
-    }
-
+// === Actualizar reportes ===
+function updateReports() {
     const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
-    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
+
+    const allTodaySales = sales.filter(s => {
+        const [datePart] = s.date.split(' ');
+        const [day, month, year] = datePart.split('/');
+        const saleDate = new Date(
+            `${year.length === 2 ? '20' + year : year}-${month}-${day}`
+        );
+        return (
+            saleDate.getDate() === today.getDate() &&
+            saleDate.getMonth() === today.getMonth() &&
+            saleDate.getFullYear() === today.getFullYear()
+        );
+    });
+
+    const adminSales = allTodaySales.filter(s => s.user === 'Administrador');
+    const userSales = allTodaySales.filter(s => s.user === 'Empleado');
 
     const container = document.getElementById('todaySales');
     if (!container) return;
 
-    try {
-        // 🎯 Determinar el rol del usuario
-        const userRole = sessionStorage.getItem('userRole');
-        const userName = sessionStorage.getItem('userName') || 'Desconocido';
+    let html = '';
 
-        // Si es EMPLEADO, llamamos a updateMySales y salimos
-        if (userRole === 'empleado') {
-            await updateMySales();
-            return; // ✅ IMPORTANTE: Salimos aquí para que no se ejecute el resto
-        }
-
-        // 📊 Si es ADMIN, cargamos todas las ventas de hoy
-        const { data: todaySalesData, error: salesError } = await supabase
-            .from('sales')
-            .select('*')
-            .gte('created_at', todayStart)
-            .lt('created_at', todayEnd)
-            .order('created_at', { ascending: false });
-
-        if (salesError) throw salesError;
-
-        let html = '';
-
-        // 🍔 Siempre mostramos una tabla con todas las ventas, incluso si está vacía
-        html += '<h3>📋 Todas las Ventas de Hoy</h3>';
-        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th><th>🧑‍🍳 Vendido por</th></tr>';
-
-        if (todaySalesData.length === 0) {
-            html += `<tr><td colspan="4" style="text-align:center; color:#ccc;">No hay ventas hoy 📊</td></tr>`;
-        } else {
-            todaySalesData.forEach(s => {
-                const dateObj = new Date(s.created_at);
-                const time = dateObj.toLocaleTimeString('es-AR');
-                const soldBy = s.user_id === 'Administrador' ? '💼 Administrador' : '👷 Empleado';
-                html += `<tr>
-                    <td>${s.product_name}</td>
-                    <td>$${s.price}</td>
-                    <td>${time}</td>
-                    <td>${soldBy}</td>
-                </tr>`;
-            });
-        }
-
-        html += `</table>`;
-
-        // 💵 Mostrar Total General SIEMPRE, incluso si es $0
-        const totalGeneral = todaySalesData.reduce((sum, s) => sum + s.price, 0);
-        html += `<p style="text-align:center; font-size:1.3em; margin-top:20px;"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
-
-        container.innerHTML = html;
-
-        // 📋 Cargar historial de movimientos (esto es común para ambos roles)
-        const historyContainer = document.getElementById('movementHistory');
-        if (historyContainer) {
-            const { data: movementsData, error: movementsError } = await supabase
-                .from('movements')
-                .select('*')
-                .order('created_at', { ascending: false })
-                .limit(20);
-
-            if (movementsError) throw movementsError;
-
-            if (movementsData.length === 0) {
-                historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
-            } else {
-                let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>📝 Descripción</th></tr>';
-                movementsData.forEach(mov => {
-                    const dateObj = new Date(mov.created_at);
-                    const formattedDate = dateObj.toLocaleString('es-AR');
-                    const escapedProduct = escapeHtml(mov.product_name);
-                    const escapedDesc = escapeHtml(mov.description);
-                    const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
-                    histHtml += `
-                        <tr>
-                            <td style="font-size:0.9em;">${formattedDate}</td>
-                            <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
-                            <td>${escapedProduct}</td>
-                            <td>${mov.quantity}</td>
-                            <td style="font-size:0.9em;">${escapedDesc}</td>
-                        </tr>
-                    `;
-                });
-                histHtml += '</table>';
-                historyContainer.innerHTML = histHtml;
-            }
-        }
-
-        console.log("✅ Reportes actualizados desde Supabase");
-    } catch (e) {
-        console.error('❌ Error al actualizar reportes:', e);
-        showAlert('danger', '❌ Error al cargar reportes. Verifica conexión.');
-    }
-}
-
-// === Actualizar mis ventas (CARGA DESDE SUPABASE) ===
-async function updateMySales() {
-    if (!supabase) {
-        console.error("⛔ Supabase no está inicializado.");
-        return;
-    }
-
-    const container = document.getElementById('liveSalesList');
-    if (!container) return;
-
-    const userName = sessionStorage.getItem('userName') || 'Desconocido';
-    const today = new Date();
-    const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).toISOString();
-    const todayEnd = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1).toISOString();
-
-    try {
-        const { data: mySalesData, error: salesError } = await supabase
-            .from('sales')
-            .select('*')
-            .eq('user_id', userName)
-            .gte('created_at', todayStart)
-            .lt('created_at', todayEnd)
-            .order('created_at', { ascending: false });
-
-        if (salesError) throw salesError;
-
-        if (mySalesData.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:#ccc;">¡Aún no has registrado ventas hoy!<br>¡Vamos, que el día es largo! 💪🍔</p>';
-            return;
-        }
-
-        let total = mySalesData.reduce((sum, s) => sum + s.price, 0);
-        let html = '<table style="width:100%; border-collapse: collapse; margin: 10px 0;"><tr>';
-        html += '<th style="text-align:left; padding:8px; border-bottom:1px solid #333;">🍔 Producto</th>';
-        html += '<th style="text-align:right; padding:8px; border-bottom:1px solid #333;">💰 Precio</th>';
-        html += '<th style="text-align:right; padding:8px; border-bottom:1px solid #333;">🕒 Hora</th></tr>';
-
-        mySalesData.forEach(s => {
-            const dateObj = new Date(s.created_at);
-            const time = dateObj.toLocaleTimeString('es-AR');
-            html += `<tr>
-                <td style="padding:8px; border-bottom:1px solid #333;">${s.product_name}</td>
-                <td style="text-align:right; padding:8px; border-bottom:1px solid #333;">$${s.price}</td>
-                <td style="text-align:right; padding:8px; border-bottom:1px solid #333;">${time}</td>
-            </tr>`;
+    if (adminSales.length > 0) {
+        const totalAdmin = adminSales.reduce((sum, s) => sum + s.price, 0);
+        html += '<h3>💼 Ventas del Administrador</h3>';
+        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
+        adminSales.forEach(s => {
+            const time = s.date.split(' ')[1];
+            html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
         });
+        html += `</table><p><strong>Total: $${totalAdmin}</strong></p>`;
+    }
 
-        html += `</table>
-        <p style="text-align:center; margin-top:15px; font-size:1.2em; color:#f4d03f;">
-            <strong>Total: $${total}</strong>
-        </p>`;
+    if (userSales.length > 0) {
+        const totalUser = userSales.reduce((sum, s) => sum + s.price, 0);
+        html += '<h3>👷 Ventas del Empleado</h3>';
+        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
+        userSales.forEach(s => {
+            const time = s.date.split(' ')[1];
+            html += `<tr><td>${s.product}</td><td>$${s.price}</td><td>${time}</td></tr>`;
+        });
+        html += `</table><p><strong>Total: $${totalUser}</strong></p>`;
+    }
 
-        container.innerHTML = html;
+    const totalGeneral = allTodaySales.reduce((sum, s) => sum + s.price, 0);
+    html += `<p style="text-align:center; font-size:1.3em; margin-top:20px;"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
 
-        console.log("✅ Mis ventas actualizadas desde Supabase");
-    } catch (e) {
-        console.error('❌ Error al actualizar mis ventas:', e);
-        showAlert('danger', '❌ Error al cargar tus ventas. Verifica conexión.');
+    if (allTodaySales.length === 0) {
+        html = '<p>No hay ventas hoy 📊</p>';
+    }
+
+    container.innerHTML = html;
+
+    // Historial de movimientos
+    const historyContainer = document.getElementById('movementHistory');
+    if (historyContainer) {
+        if (movements.length === 0) {
+            historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
+        } else {
+            let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>📝 Descripción</th></tr>';
+            movements.slice(-20).reverse().forEach(mov => {
+                const escapedProduct = escapeHtml(mov.product);
+                const escapedDesc = escapeHtml(mov.description);
+                const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
+                histHtml += `
+                    <tr>
+                        <td style="font-size:0.9em;">${mov.date}</td>
+                        <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
+                        <td>${escapedProduct}</td>
+                        <td>${mov.quantity}</td>
+                        <td style="font-size:0.9em;">${escapedDesc}</td>
+                    </tr>
+                `;
+            });
+            histHtml += '</table>';
+            historyContainer.innerHTML = histHtml;
+        }
     }
 }
 
