@@ -133,10 +133,12 @@ async function loadDataFromSupabase() {
         console.log("💰 Cargando ventas...");
         const { data: salesData, error: salesError } = await supabase
             .from('sales')
-            .select('*')
-            .order('created_at', { ascending: false })
-            .limit(100)
-            .throwOnError();
+            .select(`
+                *,
+                users!inner(
+                    username
+                )
+            `);
         if (salesError) throw salesError;
         sales = [];
         if (salesData) {
@@ -144,7 +146,8 @@ async function loadDataFromSupabase() {
                 date: new Date(s.created_at).toLocaleString('es-AR'),
                 product: s.product_name,
                 price: s.price,
-                user: s.user_id
+                user: s.user_id,
+                username: s.users.username; 
             }));
         }
         console.log("✅ Ventas cargadas:", sales.length);
@@ -981,8 +984,8 @@ function updateReports() {
             saleDate.getFullYear() === today.getFullYear()
         );
     });
-    const adminSales = allTodaySales.filter(s => s.user === 'Administrador');
-    const userSales = allTodaySales.filter(s => s.user === 'Empleado');
+    const adminSales = allTodaySales.filter(s => s.username === 'Administrador');
+    const userSales = allTodaySales.filter(s => s.username === 'Empleado');
     const container = document.getElementById('todaySales');
     if (!container) return;
 
@@ -1061,36 +1064,31 @@ function updateReports() {
     container.innerHTML = html;
 
     // Historial de movimientos
-const historyContainer = document.getElementById('movementHistory');
-if (historyContainer) {
-    if (movements.length === 0) {
-        historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
-    } else {
-        // ✅ Nueva cabecera con columna de precio unitario
-        let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>💰 Precio Unit.</th><th>📝 Descripción</th></tr>';
-        movements.slice(-20).reverse().forEach(mov => {
-            const escapedProduct = escapeHtml(mov.product);
-            const escapedDesc = escapeHtml(mov.description);
-            const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
-            
-            // ✅ Obtener precio unitario del stock, si existe
-            const productPrice = stock[mov.product]?.pricePerUnit || 0;
-            
-            histHtml += `
-                <tr>
-                    <td style="font-size:0.9em;">${mov.date}</td>
-                    <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
-                    <td>${escapedProduct}</td>
-                    <td>${mov.quantity}</td>
-                    <td class="price-cell">$${productPrice.toFixed(2)}</td>
-                    <td style="font-size:0.9em;">${escapedDesc}</td>
-                </tr>
-            `;
-        });
-        histHtml += '</table>';
-        historyContainer.innerHTML = histHtml;
+    const historyContainer = document.getElementById('movementHistory');
+    if (historyContainer) {
+        if (movements.length === 0) {
+            historyContainer.innerHTML = '<p>No hay movimientos 📋</p>';
+        } else {
+            let histHtml = '<table><tr><th>📅 Fecha</th><th>📊 Tipo</th><th>🥪 Producto</th><th>🔢 Cantidad</th><th>📝 Descripción</th></tr>';
+            movements.slice(-20).reverse().forEach(mov => {
+                const escapedProduct = escapeHtml(mov.product);
+                const escapedDesc = escapeHtml(mov.description);
+                const color = mov.type === 'Entrada' ? '#27ae60' : '#e74c3c';
+                const productPrice = stock
+                histHtml += `
+                    <tr>
+                        <td style="font-size:0.9em;">${mov.date}</td>
+                        <td style="color:${color};font-weight:bold;">${mov.type === 'Entrada' ? '⬆️' : '⬇️'} ${mov.type}</td>
+                        <td>${escapedProduct}</td>
+                        <td>${mov.quantity}</td>
+                        <td style="font-size:0.9em;">${escapedDesc}</td>
+                    </tr>
+                `;
+            });
+            histHtml += '</table>';
+            historyContainer.innerHTML = histHtml;
+        }
     }
-}
 }
 
 // === Mostrar alertas ===
