@@ -133,7 +133,7 @@ async function loadDataFromSupabase() {
         console.log("💰 Cargando ventas...");
         const { data: salesData, error: salesError } = await supabase
             .from('sales')
-            .select('*, users(username)');
+            .select('*') // , users(username)');
         if (salesError) throw salesError;
         sales = [];
         if (salesData) {
@@ -141,8 +141,9 @@ async function loadDataFromSupabase() {
                 date: new Date(s.created_at).toLocaleString('es-AR'),
                 product: s.product_name,
                 price: s.price,
-                user: s.user_id,
-                user: s.users.username  
+                user: s.user_id
+                //,
+               // user: s.users.username  
             }));
         }
         console.log("✅ Ventas cargadas:", sales.length);
