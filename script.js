@@ -969,17 +969,21 @@ function updateConfirmButtonProgress(step, total) {
 function updateReports() {
     const today = new Date();
     const allTodaySales = sales.filter(s => {
-        const [datePart] = s.date.split(' ');
-        const [day, month, year] = datePart.split('/');
-        const saleDate = new Date(
-            `${year.length === 2 ? '20' + year : year}-${month}-${day}`
-        );
+        // ✅ Las fechas vienen desde Supabase como: "2025-04-05 10:30:22.123"
+        const [datePart, timePart] = s.date.split(' '); // Separa fecha y hora
+        const [year, month, day] = datePart.split('-'); // ✅ Ahora usamos guiones, no barras
+
+        // Crear objeto Date válido
+        const saleDate = new Date(`${year}-${month}-${day}T${timePart}`);
+
+        // Comparar solo día, mes, año
         return (
             saleDate.getDate() === today.getDate() &&
             saleDate.getMonth() === today.getMonth() &&
             saleDate.getFullYear() === today.getFullYear()
         );
     });
+
     const adminSales = allTodaySales.filter(s => s.users.username  === 'Administrador');
     const userSales = allTodaySales.filter(s => s.users.username   === 'Empleado');
     const container = document.getElementById('todaySales');
