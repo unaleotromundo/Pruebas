@@ -980,8 +980,8 @@ function updateReports() {
             saleDate.getFullYear() === today.getFullYear()
         );
     });
-    const adminSales = allTodaySales.filter(s => s.users.username  === 'Administrador');
-    const userSales = allTodaySales.filter(s => s.users.username   === 'Empleado');
+    const adminSales = allTodaySales.filter(s => s.user  === '00293040-9565-4575-b2b3-aea3b20c4bd9');
+    const userSales = allTodaySales.filter(s => s.user   === '9cd71848-e9ec-4a0b-bf36-52e0905c1376');
     const container = document.getElementById('todaySales');
     if (!container) return;
 
