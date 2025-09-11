@@ -977,7 +977,17 @@ async function updateReports() {
     if (!container) return;
 
     try {
-        // 📊 Cargar ventas de hoy desde Supabase
+        // 🎯 Determinar el rol del usuario
+        const userRole = sessionStorage.getItem('userRole');
+        const userName = sessionStorage.getItem('userName') || 'Desconocido';
+
+        // Si es EMPLEADO, llamamos a updateMySales y salimos
+        if (userRole === 'empleado') {
+            await updateMySales();
+            return; // ✅ IMPORTANTE: Salimos aquí para que no se ejecute el resto
+        }
+
+        // 📊 Si es ADMIN, cargamos todas las ventas de hoy
         const { data: todaySalesData, error: salesError } = await supabase
             .from('sales')
             .select('*')
@@ -987,45 +997,37 @@ async function updateReports() {
 
         if (salesError) throw salesError;
 
-        const adminSales = todaySalesData.filter(s => s.user_id === 'Administrador');
-        const userSales = todaySalesData.filter(s => s.user_id === 'Empleado');
-
         let html = '';
 
-        if (adminSales.length > 0) {
-            const totalAdmin = adminSales.reduce((sum, s) => sum + s.price, 0);
-            html += '<h3>💼 Ventas del Administrador</h3>';
-            html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
-            adminSales.forEach(s => {
+        // 🍔 Siempre mostramos una tabla con todas las ventas, incluso si está vacía
+        html += '<h3>📋 Todas las Ventas de Hoy</h3>';
+        html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th><th>🧑‍🍳 Vendido por</th></tr>';
+
+        if (todaySalesData.length === 0) {
+            html += `<tr><td colspan="4" style="text-align:center; color:#ccc;">No hay ventas hoy 📊</td></tr>`;
+        } else {
+            todaySalesData.forEach(s => {
                 const dateObj = new Date(s.created_at);
                 const time = dateObj.toLocaleTimeString('es-AR');
-                html += `<tr><td>${s.product_name}</td><td>$${s.price}</td><td>${time}</td></tr>`;
+                const soldBy = s.user_id === 'Administrador' ? '💼 Administrador' : '👷 Empleado';
+                html += `<tr>
+                    <td>${s.product_name}</td>
+                    <td>$${s.price}</td>
+                    <td>${time}</td>
+                    <td>${soldBy}</td>
+                </tr>`;
             });
-            html += `</table><p><strong>Total: $${totalAdmin}</strong></p>`;
         }
 
-        if (userSales.length > 0) {
-            const totalUser = userSales.reduce((sum, s) => sum + s.price, 0);
-            html += '<h3>👷 Ventas del Empleado</h3>';
-            html += '<table><tr><th>🍔 Producto</th><th>💰 Precio</th><th>🕒 Hora</th></tr>';
-            userSales.forEach(s => {
-                const dateObj = new Date(s.created_at);
-                const time = dateObj.toLocaleTimeString('es-AR');
-                html += `<tr><td>${s.product_name}</td><td>$${s.price}</td><td>${time}</td></tr>`;
-            });
-            html += `</table><p><strong>Total: $${totalUser}</strong></p>`;
-        }
+        html += `</table>`;
 
+        // 💵 Mostrar Total General SIEMPRE, incluso si es $0
         const totalGeneral = todaySalesData.reduce((sum, s) => sum + s.price, 0);
         html += `<p style="text-align:center; font-size:1.3em; margin-top:20px;"><strong>💵 Total General: $${totalGeneral}</strong></p>`;
 
-        if (todaySalesData.length === 0) {
-            html = '<p>No hay ventas hoy 📊</p>';
-        }
-
         container.innerHTML = html;
 
-        // 📋 Cargar historial de movimientos desde Supabase
+        // 📋 Cargar historial de movimientos (esto es común para ambos roles)
         const historyContainer = document.getElementById('movementHistory');
         if (historyContainer) {
             const { data: movementsData, error: movementsError } = await supabase
