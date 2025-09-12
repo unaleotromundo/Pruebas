@@ -133,18 +133,28 @@ async function loadDataFromSupabase() {
         console.log("💰 Cargando ventas...");
         const { data: salesData, error: salesError } = await supabase
             .from('sales')
-            .select('*') // , users(username)');
+            .select('*, users(username)'); // Incluye el username del usuario
         if (salesError) throw salesError;
         sales = [];
         if (salesData) {
-            sales = salesData.map(s => ({
-                date: new Date(s.created_at).toLocaleString('es-AR'),
-                product: s.product_name,
-                price: s.price,
-                user: s.user_id
-                //,
-               // user: s.users.username  
-            }));
+            sales = salesData.map(s => {
+                // Formato: 'YYYY-MM-DD HH:MM:SS'
+                const createdAt = new Date(s.created_at);
+                const year = createdAt.getFullYear();
+                const month = String(createdAt.getMonth() + 1).padStart(2, '0');
+                const day = String(createdAt.getDate()).padStart(2, '0');
+                const hours = String(createdAt.getHours()).padStart(2, '0');
+                const minutes = String(createdAt.getMinutes()).padStart(2, '0');
+                const seconds = String(createdAt.getSeconds()).padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+                return {
+                    date: formattedDate,
+                    product: s.product_name,
+                    price: s.price,
+                    user: s.user_id,
+                    users: s.users || { username: '' }
+                };
+            });
         }
         console.log("✅ Ventas cargadas:", sales.length);
 
@@ -1364,10 +1374,12 @@ function updateMySales() {
     const userName = sessionStorage.getItem('userName') || 'Desconocido';
     const today = new Date();
     const myTodaySales = sales.filter(s => {
-        const [datePart] = s.date.split(' ');
-        const [day, month, year] = datePart.split('/');
-        const saleDate = new Date(`${year.length === 2 ? '20' + year : year}-${month}-${day}`);
-        return s.user === userName &&
+        // s.date: 'YYYY-MM-DD HH:MM:SS'
+        if (!s.date) return false;
+        const [datePart, timePart] = s.date.split(' ');
+        const [year, month, day] = datePart.split('-');
+        const saleDate = new Date(`${year}-${month}-${day}T${timePart}`);
+        return s.users && s.users.username === userName &&
             saleDate.getDate() === today.getDate() &&
             saleDate.getMonth() === today.getMonth() &&
             saleDate.getFullYear() === today.getFullYear();
