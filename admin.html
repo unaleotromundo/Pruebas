@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css">
     
     <!-- Librerías para exportar -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.8/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
 </head>
 <body data-theme="dark">
@@ -122,7 +122,7 @@
                         🗑️ Limpiar Todos los Datos
                     </button>
                     <button class="btn" style="background: linear-gradient(135deg, #27ae60, #2ecc71); color: white;"
-                            onclick="exportToExcel()">
+                            onclick="exportMovementsToExcel()">
                         📊 Exportar a Excel
                     </button>
                     <button class="btn" style="background: linear-gradient(135deg, #f39c12, #e67e22); color: white;"
@@ -134,6 +134,28 @@
         </div>
     </div>
 
+    <!-- Modal para seleccionar columnas de exportación a Excel -->
+    <div id="excelColumnsModal" class="edit-modal" style="display:none;">
+        <div class="modal-content" style="max-width: 400px;">
+            <button class="close-modal" onclick="closeExcelColumnsModal()">×</button>
+            <div class="modal-header">
+                <h3>📊 Exportar a Excel</h3>
+                <p>Elige las columnas que quieres exportar:</p>
+            </div>
+            <form id="excelColumnsForm">
+                <label><input type="checkbox" name="fecha" checked> <span>📅 Fecha</span></label><br>
+                <label><input type="checkbox" name="tipo" checked> <span>📊 Tipo</span></label><br>
+                <label><input type="checkbox" name="producto" checked> <span>🥪 Producto</span></label><br>
+                <label><input type="checkbox" name="cantidad" checked> <span>🔢 Cantidad</span></label><br>
+                <label><input type="checkbox" name="precio" checked> <span>💰 Precio Unit.</span></label><br>
+                <label><input type="checkbox" name="descripcion" checked> <span>📝 Descripción</span></label><br>
+                <div class="modal-actions" style="margin-top:15px;">
+                    <button type="button" class="btn btn-gold" onclick="confirmExcelColumns()">Exportar</button>
+                    <button type="button" class="btn btn-danger" onclick="closeExcelColumnsModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- Modal para Cargar Stock -->
     <div id="addStockModal" class="edit-modal">
         <div class="modal-content" style="max-width: 500px;">
