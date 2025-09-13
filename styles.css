@@ -106,8 +106,8 @@
     --secondary-bg: #ffffff;      /* Fondo tarjetas */
     --card-bg: #ffffff;           /* Fondo cards */
 
-    --text-primary: #2c3e50;      /* Texto oscuro */
-    --text-secondary: #6c757d;    /* Texto secundario */
+    --text-primary: #151d25;      /* Texto oscuro */
+    --text-secondary: #0a0c0e;    /* Texto secundario */
 
     --accent-gold: #d4a574;       /* Dorado tierra (versión clara) */
     --accent-gold-hover: #c89456; /* Dorado más oscuro */
@@ -720,12 +720,20 @@ tr:hover {
 }
 
 .close-modal:hover {
+    /* === Colores de texto en tablas de reportes según tema === */
+    [data-theme="dark"] .sales-header-table th,
     background: #c0392b;
     transform: scale(1.1);
 }
+        color: #fff !important;
+    }
+
+    [data-theme="light"] .sales-header-table th,
 
 .modal-form-group {
     margin-bottom: 20px;
+        color: #111 !important;
+    }
 }
 
 .modal-form-group label {
@@ -1250,7 +1258,7 @@ tr:hover {
 .sales-report td {
     padding: 12px 15px;
     border-bottom: 1px solid #333;
-    color: #e0e0e0;
+    color: #c9c7c7;
     font-size: 0.95em;
 }
 
@@ -1277,4 +1285,13 @@ tr:hover {
     background: #1a1a1a;
     border-radius: 5px;
     text-align: left;
+}
+[data-theme="dark"] .sales-report td,
+[data-theme="dark"] .sales-report .time {
+  color: #fff !important;
+}
+
+[data-theme="light"] .sales-report td,
+[data-theme="light"] .sales-report .time {
+  color: #111 !important;
 }

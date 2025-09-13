@@ -118,14 +118,17 @@
                     <div id="movementHistory"></div>
                 </div>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
+                    <button class="btn btn-danger" style="padding:6px 14px;font-size:0.95em;border-radius:7px;align-self:center;" onclick="confirmClearAllData()">
+                        🗑️ Limpiar
+                    </button>
                     <button class="btn btn-gold" onclick="exportMovementsToExcel()">
-                        � Historial de movimientos
+                        📊 Historial de movimientos
                     </button>
                     <button class="btn btn-gold" onclick="exportStockToExcel()">
-                        � Stock actual
+                        📦 Stock actual
                     </button>
-                    <button class="btn btn-gold" onclick="alert('Función pendiente')">
-                        📄 [Tercer botón]
+                    <button class="btn btn-gold" onclick="exportSalesToExcel()">
+                        � Ventas
                     </button>
                 </div>
             </div>
