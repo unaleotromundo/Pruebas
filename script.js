@@ -7,7 +7,7 @@ function exportSalesToExcel() {
     const columns = [
         { key: 'fecha', label: '📅 Fecha', get: s => s.date },
         { key: 'producto', label: '🍔 Producto', get: s => s.product },
-        { key: 'precio', label: '💰 Precio', get: s => `$${Number(s.price).toFixed(2)}` },
+        { key: 'precio', label: '💰 Precio', get: s => s.price },
         { key: 'usuario', label: '🧑‍💼 Vendido por', get: s => s.users?.username || s.user || '—' }
     ];
     const headers = columns.map(col => col.label);
@@ -55,8 +55,8 @@ function exportStockToExcel() {
         { key: 'producto', label: '🥪 Producto', get: (item, name) => name },
         { key: 'cantidad', label: '🔢 Cantidad', get: (item) => item.quantity },
         { key: 'unidad', label: '📏 Unidad', get: (item) => item.unit },
-        { key: 'precio', label: '💰 Precio Unit.', get: (item) => item.pricePerUnit !== undefined ? `$${Number(item.pricePerUnit).toFixed(2)}` : '—' },
-        { key: 'total', label: '💵 Total', get: (item) => item.pricePerUnit !== undefined ? `$${(item.pricePerUnit * item.quantity).toFixed(2)}` : '—' }
+        { key: 'precio', label: '💰 Precio Unit.', get: (item) => item.pricePerUnit !== undefined ? item.pricePerUnit : '—' },
+        { key: 'total', label: '💵 Total', get: (item) => item.pricePerUnit !== undefined ? item.pricePerUnit * item.quantity : '—' }
     ];
     const headers = columns.map(col => col.label);
     const data = Object.entries(stock).map(([name, item]) => columns.map(col => col.get(item, name)));
