@@ -117,21 +117,33 @@
                     <h3>📋 Historial de Movimientos de Stock</h3>
                     <div id="movementHistory"></div>
                 </div>
-                <div style="display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 20px;">
-                    <button class="btn btn-danger" style="padding:6px 14px;font-size:0.95em;border-radius:7px;align-self:center;" onclick="confirmClearAllData()">
-                        🗑️ Limpiar
+                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: center; margin-top: 20px; padding: 0 20px;">
+                    <!-- Botón "Limpiar" achicado y a la izquierda -->
+                    <button class="btn btn-danger" 
+                            style="padding: 8px; font-size: 0.9em; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;"
+                            onclick="confirmClearAllData()"
+                            title="Limpiar todos los datos">
+                        🗑️
                     </button>
-                    <button class="btn btn-gold" onclick="exportMovementsToExcel()">
-                        📊 Historial de movimientos
-                    </button>
-                    <button class="btn btn-gold" onclick="exportStockToExcel()">
-                        📦 Stock actual
-                    </button>
-                    <button class="btn btn-gold" onclick="exportSalesToExcel()">
-                       💰 Ventas
-                    </button>
-                </div>
-            </div>
+
+                    <!-- Texto "Exportar a Excel:" -->
+                    <span style="font-weight: bold; color: var(--text-color); white-space: nowrap; margin: 0 10px;">
+                        Exportar a Excel:
+                    </span>
+
+                    <!-- Botones de exportación -->
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap; justify-content: center;">
+                        <button class="btn btn-gold" style="padding: 8px 12px; font-size: 0.9em; white-space: nowrap;" onclick="exportMovementsToExcel()">
+                            📊 Movimientos
+                        </button>
+                        <button class="btn btn-gold" style="padding: 8px 12px; font-size: 0.9em; white-space: nowrap;" onclick="exportStockToExcel()">
+                            📦 Stock
+                        </button>
+                        <button class="btn btn-gold" style="padding: 8px 12px; font-size: 0.9em; white-space: nowrap;" onclick="exportSalesToExcel()">
+                            💰 Ventas
+                        </button>
+                    </div>
+                </div>            </div>
         </div>
     </div>
 
