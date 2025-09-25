@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeroFit Clone - Gamifica tu entrenamiento</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.css" rel="stylesheet">
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <h1>HeroFit Clone</h1>
+            <p>¡Gamifica tu entrenamiento!</p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content" id="content">
+            <!-- Home View -->
+            <div id="homeView" class="view active">
+                <!-- Avatar Principal -->
+                <div class="hero-card">
+                    <div class="hero-bg"></div>
+                    <div class="hero-content">
+                        <div class="avatar" id="userAvatar">💪</div>
+                        <h2 id="userName">Tu Avatar</h2>
+                        <p id="userTitle">Guerrero Novato</p>
+                        
+                        <!-- Barra de XP -->
+                        <div class="xp-bar">
+                            <div class="xp-fill" id="xpFill"></div>
+                        </div>
+                        <p id="xpText">Nivel 1 • 0/100 XP</p>
+                    </div>
+                </div>
+
+                <!-- Estadísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <p class="stat-number" id="totalWorkouts">0</p>
+                        <p class="stat-label">Entrenamientos</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <p class="stat-number" id="userStreak">0</p>
+                        <p class="stat-label">Días seguidos</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🏆</div>
+                        <p class="stat-number" id="userRank">#1</p>
+                        <p class="stat-label">Posición</p>
+                    </div>
+                </div>
+
+                <!-- Entrenamientos Disponibles -->
+                <div class="section">
+                    <h3>Entrenamientos Disponibles</h3>
+                    <div class="workouts-grid" id="workoutsGrid">
+                        <!-- Se llenan dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leaderboard View -->
+            <div id="leaderboardView" class="view">
+                <h2 class="section-title">🏆 Clasificación</h2>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <!-- Se llena dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Progress View -->
+            <div id="progressView" class="view">
+                <h2 class="section-title">📈 Tu Progreso</h2>
+                
+                <!-- Logros -->
+                <div class="section">
+                    <h3>Logros</h3>
+                    <div class="achievements-grid" id="achievementsGrid">
+                        <!-- Se llenan dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Historial Reciente -->
+                <div class="section">
+                    <h3>Entrenamientos Recientes</h3>
+                    <div id="workoutHistory" class="workout-history">
+                        <div class="empty-state">
+                            <p>¡Completa tu primer entrenamiento!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="bottom-nav">
+            <button class="nav-btn active" data-view="home">
+                <span class="nav-icon">⭐</span>
+                <span class="nav-label">Inicio</span>
+            </button>
+            <button class="nav-btn" data-view="leaderboard">
+                <span class="nav-icon">🏆</span>
+                <span class="nav-label">Ranking</span>
+            </button>
+            <button class="nav-btn" data-view="progress">
+                <span class="nav-icon">📈</span>
+                <span class="nav-label">Progreso</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Workout Modal -->
+    <div id="workoutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="workout-icon" id="modalIcon">💪</div>
+                <h3 id="modalTitle">Entrenamiento</h3>
+            </div>
+            
+            <div class="duration-selector">
+                <label>Duración (minutos)</label>
+                <div class="duration-controls">
+                    <button id="decreaseDuration">-</button>
+                    <span id="durationValue">30</span>
+                    <button id="increaseDuration">+</button>
+                </div>
+            </div>
+
+            <div class="xp-preview" id="xpPreview">
+                <strong>Ganarás: 20 XP</strong>
+            </div>
+            
+            <div class="modal-actions">
+                <button id="cancelWorkout" class="btn-secondary">Cancelar</button>
+                <button id="completeWorkout" class="btn-primary">¡Completar!</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Level Up Modal -->
+    <div id="levelUpModal" class="modal">
+        <div class="modal-content level-up">
+            <div class="level-up-icon">🎉</div>
+            <h2>¡NIVEL UP!</h2>
+            <p id="levelUpText">¡Ahora eres nivel 2!</p>
+            <button id="closeLevelUp" class="btn-primary">¡Increíble!</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
