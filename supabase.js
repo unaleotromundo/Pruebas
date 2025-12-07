@@ -1,7 +1,7 @@
 // supabase.js
 
 const SUPABASE_URL = 'https://asejbhohkbcoixiwdhcq.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzZWpiaG9oa2Jjb2l4aXdkaGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwMjk0NzMsImV4cCI6MjA4MDYwNTQ3M30.kbRKO5PEljZ29_kn6GYKoyGfB_t8xalxtMiq1ovPo4w';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFzZWpiaG9oa2Jjb2l4aXdkaGNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjUwMjk0NzMsImV4cCI6MjA4MDYwNTQ3M30.kbRKO[...]';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -111,7 +111,7 @@ export async function uploadProfilePhoto(file, dogId) {
         throw new Error('Error al subir foto de perfil: ' + uploadError.message);
     }
 
-    const {  { publicUrl }, error: urlError } = await supabase
+    const { data: { publicUrl }, error: urlError } = await supabase
         .storage
         .from('photos')
         .getPublicUrl(fileName);
@@ -143,3 +143,9 @@ export async function updateDogProfilePhoto(dogId, fotoUrl) {
 }
 
 export { supabase };
+
+// Expose some helpers for the non-module inline script in index.html
+// (mantener la compatibilidad con los onclick inline y el script no-module)
+window.uploadProfilePhoto = uploadProfilePhoto;
+window.updateDogProfilePhoto = updateDogProfilePhoto;
+window.supabaseClient = supabase;
