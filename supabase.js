@@ -111,7 +111,7 @@ export async function uploadProfilePhoto(file, dogId) {
         throw new Error('Error al subir foto de perfil: ' + uploadError.message);
     }
 
-    const {  { publicUrl }, error: urlError } = await supabase
+    const { data: { publicUrl }, error: urlError } = await supabase
         .storage
         .from('photos')
         .getPublicUrl(fileName);
@@ -143,3 +143,9 @@ export async function updateDogProfilePhoto(dogId, fotoUrl) {
 }
 
 export { supabase };
+
+// Expose some helpers for the non-module inline script in index.html
+// (mantener la compatibilidad con los onclick inline y el script no-module)
+window.uploadProfilePhoto = uploadProfilePhoto;
+window.updateDogProfilePhoto = updateDogProfilePhoto;
+window.supabaseClient = supabase;
