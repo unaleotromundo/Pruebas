@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Webamp Full - Canciones Completas</title>
+    <title>Webamp Ultra - Full Music</title>
     <link rel="stylesheet" href="https://unpkg.com/98.css">
     <style>
-        body { background-color: #008080; margin: 20px; font-family: sans-serif; }
+        body { background-color: #008080; margin: 20px; font-family: 'MS Sans Serif', Arial; }
         #app { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
-        .winamp-font { background: #000; color: #00ff00; padding: 5px; font-family: monospace; border: 2px inset #fff; }
+        .winamp-font { background: #000; color: #00ff00; padding: 5px; font-family: monospace; border: 2px inset #fff; font-size: 13px; }
         .album-art { width: 100%; height: 180px; object-fit: cover; border: 2px inset #fff; background: #000; }
         .lyrics-container { 
             height: 250px; background: #000; color: #0f0; overflow-y: auto; 
@@ -18,19 +18,19 @@
         .lyric-line { opacity: 0.3; transition: all 0.3s; margin: 12px 0; font-weight: bold; }
         .lyric-line.active { opacity: 1; color: #fff; text-shadow: 0 0 10px #0f0; transform: scale(1.1); }
         .search-results { height: 350px; overflow-y: scroll; background: white; border: 2px inset #808080; }
-        .track-item { cursor: pointer; padding: 8px; border-bottom: 1px solid #ddd; font-size: 12px; }
+        .track-item { cursor: pointer; padding: 8px; border-bottom: 1px solid #ddd; font-size: 11px; }
         .track-item:hover { background: #000080; color: white; }
-        
-        #yt-placeholder { position: absolute; top: -9999px; left: -9999px; visibility: hidden; }
+        #yt-placeholder { position: absolute; top: -9999px; left: -9999px; }
         .controls-panel { background: #c0c0c0; padding: 10px; border: 1px inset #fff; margin: 10px 0; }
-        .progress-bar { width: 100%; height: 15px; background: #000; position: relative; cursor: pointer; border: 1px solid #fff; }
-        .progress-fill { height: 100%; background: #000080; width: 0%; transition: width 0.5s linear; }
+        .progress-bar { width: 100%; height: 12px; background: #000; position: relative; cursor: pointer; border: 1px solid #fff; }
+        .progress-fill { height: 100%; background: #000080; width: 0%; }
+        .loading-overlay { font-size: 10px; color: blue; margin-top: 5px; }
     </style>
 </head>
 <body>
 
 <div id="app">
-    <!-- PANEL DE BUSQUEDA -->
+    <!-- BUSCADOR -->
     <div class="window" style="width: 320px">
         <div class="title-bar"><div class="title-bar-text">Search_Engine.exe</div></div>
         <div class="window-body">
@@ -38,7 +38,7 @@
                 <input v-model="query" @keyup.enter="searchMusic" type="text" style="width: 100%" placeholder="Artista o canción...">
             </div>
             <button @click="searchMusic" style="width: 100%; margin: 8px 0;" :disabled="loading">
-                {{ loading ? 'BUSCANDO EN DEEZER...' : 'BUSCAR MÚSICA' }}
+                {{ loading ? 'BUSCANDO...' : 'BUSCAR' }}
             </button>
             <div class="search-results">
                 <div v-for="track in results" :key="track.id" class="track-item" @click="playTrack(track)">
@@ -50,41 +50,41 @@
 
     <!-- REPRODUCTOR -->
     <div class="window" style="width: 480px">
-        <div class="title-bar"><div class="title-bar-text">Webamp Player - Full Audio (YouTube Engine)</div></div>
+        <div class="title-bar"><div class="title-bar-text">Webamp Player - Audio Completo</div></div>
         <div class="window-body">
-            <div class="winamp-font" style="margin-bottom: 10px; font-size: 14px; white-space: nowrap; overflow: hidden;">
-                {{ currentTrack ? 'PLAYING: ' + currentTrack.title : 'READY' }}
+            <div class="winamp-font">
+                {{ currentTrack ? 'ON: ' + currentTrack.title : 'ESPERANDO...' }}
             </div>
             
-            <div style="display: flex; gap: 15px;">
+            <div style="display: flex; gap: 15px; margin-top:10px;">
                 <div style="width: 180px">
                     <img v-if="currentTrack" :src="currentTrack.album.cover_big" class="album-art">
-                    <div v-else class="album-art" style="display:flex; align-items:center; justify-content:center; color:#555">NO ART</div>
+                    <div v-else class="album-art"></div>
                 </div>
                 <div style="flex: 1">
                     <div class="controls-panel">
-                        <div style="margin-bottom: 5px; font-size: 11px; font-family: monospace;">TIME: {{ formatTime(currentTime) }} / {{ formatTime(duration) }}</div>
+                        <div style="font-size: 10px; font-family: monospace; margin-bottom: 5px;">
+                            {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+                        </div>
                         <div class="progress-bar" @click="seek">
                             <div class="progress-fill" :style="{ width: (currentTime/duration * 100) + '%' }"></div>
                         </div>
-                        <div style="margin-top: 15px; display: flex; gap: 5px;">
-                            <button @click="togglePlay" style="flex: 1; font-weight:bold">{{ isPlaying ? 'PAUSE' : 'PLAY' }}</button>
-                        </div>
+                        <button @click="togglePlay" style="width: 100%; margin-top: 10px; font-weight: bold;">
+                            {{ isPlaying ? 'PAUSE' : 'PLAY' }}
+                        </button>
+                        <div v-if="status" class="loading-overlay">{{ status }}</div>
                     </div>
-                    <div style="font-size: 10px; color: #444; text-align: center;">Audio completo vía YouTube API</div>
                 </div>
             </div>
 
             <div class="lyrics-container" ref="lyricsScroll">
-                <div v-if="!currentTrack" style="padding-top: 100px; color: #666;">Selecciona una canción para comenzar</div>
                 <div v-for="(line, index) in lyrics" :key="index" :class="['lyric-line', { active: currentLineIndex === index }]">
                     {{ line.text }}
                 </div>
+                <div v-if="currentTrack && lyrics.length === 0" style="margin-top: 80px">Buscando letra...</div>
             </div>
         </div>
     </div>
-
-    <!-- El div donde se cargará YouTube -->
     <div id="yt-placeholder"></div>
 </div>
 
@@ -94,39 +94,30 @@
 <script>
     const { createApp } = Vue;
 
+    // Lista de servidores de respaldo
+    const PIPED_INSTANCES = [
+        "https://pipedapi.kavin.rocks",
+        "https://pipedapi.leptons.xyz",
+        "https://pipedapi.moomoo.me",
+        "https://pipedapi.rivo.one",
+        "https://api-piped.mha.fi"
+    ];
+
     createApp({
         data() {
             return {
-                query: '',
-                results: [],
-                currentTrack: null,
-                lyrics: [],
-                currentLineIndex: -1,
-                loading: false,
-                isPlaying: false,
-                currentTime: 0,
-                duration: 0,
-                ytPlayer: null
+                query: '', results: [], currentTrack: null, lyrics: [],
+                currentLineIndex: -1, loading: false, isPlaying: false,
+                currentTime: 0, duration: 0, ytPlayer: null, status: ''
             }
         },
         mounted() {
-            // Configuración segura de la API de YouTube
             window.onYouTubeIframeAPIReady = () => {
                 this.ytPlayer = new YT.Player('yt-placeholder', {
-                    height: '0',
-                    width: '0',
-                    playerVars: { 
-                        'origin': window.location.origin || '*',
-                        'enablejsapi': 1 
-                    },
+                    height: '0', width: '0',
                     events: {
-                        'onStateChange': (e) => {
-                            if (e.data == YT.PlayerState.PLAYING) this.isPlaying = true;
-                            if (e.data == YT.PlayerState.PAUSED) this.isPlaying = false;
-                        },
-                        'onReady': () => {
-                            setInterval(this.updateProgress, 400);
-                        }
+                        'onStateChange': (e) => this.isPlaying = (e.data == 1),
+                        'onReady': () => setInterval(this.updateProgress, 400)
                     }
                 });
             };
@@ -136,57 +127,58 @@
                 if (!this.query) return;
                 this.loading = true;
                 try {
-                    const proxy = "https://corsproxy.io/?";
-                    const target = `https://api.deezer.com/search?q=${encodeURIComponent(this.query)}`;
-                    const res = await fetch(proxy + encodeURIComponent(target));
+                    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.deezer.com/search?q=' + this.query)}`);
                     const data = await res.json();
                     this.results = data.data || [];
-                } catch (e) { alert("Error al buscar en Deezer"); }
+                } catch (e) { alert("Error al buscar música"); }
                 this.loading = false;
             },
 
             async playTrack(track) {
                 this.currentTrack = track;
                 this.lyrics = [];
-                this.currentLineIndex = -1;
+                this.status = 'Localizando audio completo...';
                 
-                // Buscar canción completa en YouTube (usando instancia de Piped más estable)
-                try {
-                    const searchStr = `${track.artist.name} ${track.title} official audio`;
-                    const ytSearchRes = await fetch(`https://pipedapi.kavin.rocks/search?q=${encodeURIComponent(searchStr)}&filter=music_videos`);
-                    const ytData = await ytSearchRes.json();
-                    
-                    if(ytData.items && ytData.items.length > 0) {
-                        const videoId = ytData.items[0].url.split("v=")[1];
-                        this.ytPlayer.loadVideoById(videoId);
-                        this.isPlaying = true;
-                    }
-                } catch (e) {
-                    alert("Error buscando el audio completo. Intenta con otra canción.");
+                const searchStr = `${track.artist.name} ${track.title} official audio`;
+                let videoId = null;
+
+                // Intentar con múltiples servidores hasta encontrar uno que responda
+                for (let instance of PIPED_INSTANCES) {
+                    try {
+                        this.status = `Conectando a servidor...`;
+                        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(instance + '/search?q=' + searchStr + '&filter=music_videos')}`);
+                        const data = await res.json();
+                        if (data.items && data.items.length > 0) {
+                            videoId = data.items[0].url.split("v=")[1];
+                            break; // ¡Éxito!
+                        }
+                    } catch (e) { console.warn(`Instancia ${instance} falló, probando la siguiente...`); }
                 }
 
-                // Obtener letras sincronizadas de LRCLIB
-                try {
-                    const lrcRes = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(track.artist.name)}&track_name=${encodeURIComponent(track.title)}`);
-                    const lrcData = await lrcRes.json();
-                    if (lrcData.syncedLyrics) this.parseLRC(lrcData.syncedLyrics);
-                    else this.lyrics = [{time: 0, text: lrcData.plainLyrics || "Letra no disponible"}];
-                } catch (e) { 
-                    this.lyrics = [{time: 0, text: "Letra no encontrada"}]; 
+                if (videoId) {
+                    this.ytPlayer.loadVideoById(videoId);
+                    this.status = '';
+                    this.fetchLyrics(track);
+                } else {
+                    this.status = 'Error: No se encontró el audio. Intenta otra.';
                 }
             },
 
-            parseLRC(lrcText) {
-                const lines = lrcText.split('\n');
+            async fetchLyrics(track) {
+                try {
+                    const res = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(track.artist.name)}&track_name=${encodeURIComponent(track.title)}`);
+                    const data = await res.json();
+                    if (data.syncedLyrics) this.parseLRC(data.syncedLyrics);
+                    else this.lyrics = [{time: 0, text: data.plainLyrics || "Letra no disponible"}];
+                } catch (e) { this.lyrics = [{time: 0, text: "Sin letra"}]; }
+            },
+
+            parseLRC(lrc) {
                 const result = [];
-                const timeReg = /\[(\d+):(\d+\.\d+)\]/;
-                lines.forEach(line => {
-                    const match = timeReg.exec(line);
-                    if (match) {
-                        const mins = parseFloat(match[1]);
-                        const secs = parseFloat(match[2]);
-                        result.push({ time: mins * 60 + secs, text: line.replace(timeReg, '').trim() });
-                    }
+                const reg = /\[(\d+):(\d+\.\d+)\]/;
+                lrc.split('\n').forEach(line => {
+                    const m = reg.exec(line);
+                    if (m) result.push({ time: parseFloat(m[1]) * 60 + parseFloat(m[2]), text: line.replace(reg, '').trim() });
                 });
                 this.lyrics = result;
             },
@@ -195,42 +187,23 @@
                 if (this.ytPlayer && this.ytPlayer.getCurrentTime) {
                     this.currentTime = this.ytPlayer.getCurrentTime();
                     this.duration = this.ytPlayer.getDuration();
-                    
-                    // Sincronizar letras
-                    const index = this.lyrics.findIndex((line, i) => {
-                        return this.currentTime >= line.time && (!this.lyrics[i+1] || this.currentTime < this.lyrics[i+1].time);
-                    });
-                    
-                    if (index !== -1 && index !== this.currentLineIndex) {
-                        this.currentLineIndex = index;
-                        const container = this.$refs.lyricsScroll;
-                        const activeLine = container.querySelectorAll('.lyric-line')[index];
-                        if (activeLine) {
-                            container.scrollTop = activeLine.offsetTop - container.offsetTop - 100;
-                        }
+                    const idx = this.lyrics.findIndex((l, i) => this.currentTime >= l.time && (!this.lyrics[i+1] || this.currentTime < this.lyrics[i+1].time));
+                    if (idx !== -1 && idx !== this.currentLineIndex) {
+                        this.currentLineIndex = idx;
+                        const activeLine = this.$refs.lyricsScroll.querySelectorAll('.lyric-line')[idx];
+                        if (activeLine) this.$refs.lyricsScroll.scrollTop = activeLine.offsetTop - 150;
                     }
                 }
             },
 
-            togglePlay() {
-                if (this.isPlaying) this.ytPlayer.pauseVideo();
-                else this.ytPlayer.playVideo();
-            },
-
-            seek(e) {
-                const percent = e.offsetX / e.currentTarget.offsetWidth;
-                this.ytPlayer.seekTo(this.duration * percent);
-            },
-
-            formatTime(s) {
-                if (!s) return "0:00";
-                const mins = Math.floor(s / 60);
-                const secs = Math.floor(s % 60);
-                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            togglePlay() { this.isPlaying ? this.ytPlayer.pauseVideo() : this.ytPlayer.playVideo(); },
+            seek(e) { this.ytPlayer.seekTo(this.duration * (e.offsetX / e.currentTarget.offsetWidth)); },
+            formatTime(s) { 
+                if(!s) return "0:00";
+                return Math.floor(s/60) + ":" + Math.floor(s%60).toString().padStart(2, '0');
             }
         }
     }).mount('#app');
 </script>
-
 </body>
 </html>
