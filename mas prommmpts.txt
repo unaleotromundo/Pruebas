@@ -1,0 +1,107 @@
+Prompt de Chatgpt para creación de rutinas de entrenamiento personalizadas.
+Crea una rutina de entrenamiento personalizada para un individuo con un estilo de vida sedentario que busca mejorar su condición física general, centrada en ejercicios que se pueden hacer en casa con equipo limitado.
+
+Prompt de Chatgpt para redacción de correos electrónicos profesionales.
+Formula un modelo de correo electrónico profesional para la negociación de contratos que sea cortés pero firme, ofreciendo concesiones pero manteniendo las estipulaciones clave de un acuerdo.
+
+Prompt de Chatgpt para prácticas de meditación guiada.
+Diseña una sesión de meditación guiada enfocada en la reducción de la ansiedad previa a presentaciones públicas, incorporando técnicas de respiración y visualización positiva.
+
+Prompt de Chatgpt para educación financiera y asesoramiento de inversiones.
+Elabora un programa de educación financiera y asesoramiento de inversiones para jóvenes adultos, cubriendo fundamentos de ahorro, inversión en la bolsa de valores y planificación para la jubilación.
+
+Prompt de Chatgpt para técnicas de relajación y manejo del estrés.
+Presenta una serie de técnicas de relajación y manejo del estrés adaptadas a personas con trabajos de alta presión, que incluyan ejercicios de respiración profunda, estiramientos de yoga y uso de aromaterapia.
+
+Prompt de Chatgpt para consejos de crianza y educación infantil.
+Proporciona consejos de crianza y educación infantil para padres que trabajan desde casa, ofreciendo estrategias para mantener a los niños comprometidos con el aprendizaje mientras equilibran sus propias responsabilidades laborales.
+
+Prompt de ChatGPT para creación de recetas personalizadas.
+Genera un conjunto de recetas personalizadas para personas con intolerancia al gluten, enfocándose en comidas nutritivas y equilibradas que sean fáciles de preparar.
+
+Prompt de Chatgpt para análisis literario detallado.
+Desarrolla un análisis literario detallado de la caracterización y desarrollo de temas en la novela “1984” de George Orwell, y cómo estos se relacionan con la sociedad contemporánea.
+
+Prompt de Chatgpt para desarrollo de estrategias de juego (ajedrez, videojuegos, etc.).
+Diseña un conjunto de estrategias para mejorar en videojuegos de estrategia en tiempo real, abordando la gestión de recursos, el mapeo de terreno y tácticas de combate.
+
+Prompt de Chatgpt para asesoramiento en hábitos de estudio efectivos.
+Elabora un programa de asesoramiento en hábitos de estudio efectivos para estudiantes de secundaria que enfrentan exámenes finales, incluyendo técnicas de memorización, planificación del tiempo y métodos de estudio en grupo.
+
+Prompt de Chatgpt para desarrollo de aplicaciones móviles.
+Detalla un enfoque paso a paso para el desarrollo de una aplicación móvil destinada a ayudar a pequeñas empresas a gestionar su inventario, destacando las características esenciales, la interfaz de usuario y consideraciones de seguridad.
+
+Prompt de Chatgpt para planificación financiera
+Detalla un enfoque paso a paso para el desarrollo de una aplicación móvil destinada a ayudar a pequeñas empresas a gestionar su inventario, destacando las características esenciales, la interfaz de usuario y consideraciones de seguridad.
+
+Prompt de Chatgpt para escritura y análisis de poesía.
+Genera ejercicios de escritura poética enfocados en diferentes estilos y formas, con análisis post-escritura que incluyan métrica, rima y uso de figuras retóricas, para refinamiento de la técnica poética.
+
+Prompt de Chatgpt para diseño de interiores y organización del hogar.
+Crea conceptos de diseño de interiores que combinen funcionalidad y estilo contemporáneo, proporcionando soluciones para optimizar espacios limitados y consejos para la elección de paletas de colores y mobiliario.
+
+Prompt de Chatgpt para debates éticos y filosóficos..
+Estructura debates éticos y filosóficos en torno a temas actuales, proporcionando una guía de argumentación, recursos para la investigación y técnicas para el análisis crítico y la argumentación lógica.
+
+Prompt de Chatgpt para técnicas de narrativa y storytelling.
+Desarrolla métodos de narrativa y storytelling que mejoren la cohesión y la coherencia de las historias, incluyendo ejercicios para la creación de arcos narrativos complejos y el desarrollo profundo de personajes.
+
+Prompt de Chatgpt para entrenamiento en habilidades de negociación.
+Formula un curso de negociación con técnicas basadas en la psicología y la comunicación asertiva, incluyendo role-playing de negociaciones comerciales y análisis de casos de estudio.
+
+Prompt de Chatgpt para desarrollo de campañas publicitarias.
+Diseña campañas publicitarias que abarquen desde la conceptualización hasta la implementación, con enfoque en estrategias omnicanal y la medición del retorno de inversión en distintos medios.
+
+Prompt de Chatgpt para planeación de eventos y fiestas.
+Planifica eventos y fiestas con una lista detallada de tareas, desde la logística hasta la experiencia del invitado, con recomendaciones para la sostenibilidad y la inclusividad.
+
+Prompt de Chatgpt para consultas sobre derecho y legislación.
+Proporciona consultoría sobre derecho y legislación adaptada a diferentes jurisdicciones, incluyendo la interpretación de leyes y la preparación de documentos legales para casos comunes.
+
+Prompt de Chatgpt para creación de contenido de blog y SEO.
+Genera contenido de blog y SEO con estrategias para la identificación de palabras clave, la escritura de contenido relevante y la construcción de enlaces, para maximizar la visibilidad online.
+
+Prompt de Chatgpt para desarrollo de habilidades de liderazgo.
+Desarrolla habilidades de liderazgo a través de un programa que fomente la autoconsciencia, la comunicación efectiva y la toma de decisiones ética, con énfasis en el liderazgo de equipos diversos.
+
+Prompt de Chatgpt para entrenamiento en primeros auxilios.
+Crea un programa de primeros auxilios que enseñe técnicas básicas y avanzadas, con simulaciones de emergencias y una guía para la certificación en primeros auxilios.
+
+Prompt de Chatgpt para diseño de moda y tendencias.
+Asesora en tendencias de moda con un análisis de las últimas pasarelas, recomendaciones de estilo personalizado y consejos para la sostenibilidad en el consumo de moda.
+
+Prompt de Chatgpt para análisis de datos y estadísticas.
+Analiza datos y estadísticas proporcionando métodos para la recolección, interpretación y presentación de datos, y técnicas para la toma de decisiones basada en datos en distintos contextos.
+
+Prompt de Chatgpt para mejora de la memoria y técnicas de estudio.
+Mejora de memoria y técnicas de estudio con un conjunto de ejercicios cognitivos, estrategias de aprendizaje y herramientas de gestión del tiempo para optimizar el rendimiento académico y profesional.
+
+Prompt de Chatgpt para consultas sobre sostenibilidad y medio ambiente.
+Consulta sobre sostenibilidad y medio ambiente ofreciendo estrategias para reducir la huella de carbono, implementar prácticas de vida sostenible y entender políticas ambientales actuales.
+
+Prompt de Chatgpt para desarrollo de habilidades sociales y etiqueta.
+Detalla un enfoque paso a paso para el desarrollo de una aplicación móvil destinada a ayudar a pequeñas empresas a gestionar su inventario, destacando las características esenciales, la interfaz de usuario y consideraciones de seguridad.
+
+Prompt de Chatgpt para estrategias de inversión en criptomonedas.
+Estrategias de inversión en criptomonedas enseñando los fundamentos de la blockchain, análisis de mercado y gestión de riesgos para inversores novatos y experimentados en el ámbito de las monedas digitales.
+
+Prompt de Chatgpt para creación de música y letras de canciones.
+Crea música y letras de canciones a través de talleres que exploren la teoría musical, estructuras de composición y técnicas de escritura lírica, complementados con herramientas de software y plataformas para la producción musical.
+
+Prompt de Chatgpt para ejercicios de pensamiento crítico.
+Ejercicios de pensamiento crítico que incluyan resolución de problemas complejos, análisis de argumentos y técnicas de debate, diseñados para mejorar la claridad y lógica en el proceso de toma de decisiones.
+
+Prompt de Chatgpt para guía de compras y comparativas de productos.
+Actúa como un experto en análisis de productos y crea una guía detallada de compras con comparativas basadas en rendimiento, precio y durabilidad para ayudar a los consumidores a tomar decisiones informadas.
+
+Prompt de Chatgpt para asesoramiento en carreras de tecnología de la información.
+Actúa como un consejero de carreras especializado en el campo de la tecnología de la información y ofrece orientación sobre las habilidades más demandadas, trayectorias profesionales y consejos para la búsqueda de empleo en la industria.
+
+Prompt de Chatgpt para desarrollo personal y autoconocimiento.
+Actúa como un coach de desarrollo personal y guía a los usuarios en un viaje de autoconocimiento con ejercicios prácticos para descubrir sus pasiones, fortalezas y objetivos a largo plazo.
+
+Prompt de Chatgpt para aprender sobre historia y culturas del mundo.
+Actúa como un historiador y antropólogo y proporciona lecciones enriquecedoras sobre historia y culturas del mundo, destacando las interconexiones y la diversidad global.
+
+Prompt de Chatgpt para consejos sobre cuidado de mascotas y adiestramiento.
+Actúa como un entrenador de mascotas certificado y ofrece consejos expertos sobre cuidado de mascotas y técnicas de adiestramiento positivo adaptadas a diferentes especies y comportamientos.

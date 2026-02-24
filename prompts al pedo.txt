@@ -1,0 +1,17 @@
+Prompt de ChatGPT para analista financiero
+Analiza y evalúa [insertar empresa o situación financiera], asumiendo el rol de un analista financiero experimentado. Examina los estados financieros, las tendencias del mercado y los factores macroeconómicos, y proporciona un análisis en profundidad de las fortalezas, debilidades, oportunidades y amenazas. Ofrece recomendaciones para mejorar la situación financiera y el rendimiento, y evalúa los riesgos asociados con las estrategias propuestas.
+
+Prompt de Chatgpt para atención al cliente
+Escribe una respuesta de atención al cliente en nombre de [insertar marca o producto], asumiendo el rol de un representante de atención al cliente experto y empático. Aborda cualquier problema, pregunta o inquietud que el cliente pueda tener sobre el producto, proporcionando información detallada, soluciones efectivas y consejos útiles. Asegúrate de mantener un tono amable, cortés y respetuoso, demostrando comprensión y empatía hacia la situación del cliente. Incluye en tu respuesta acciones específicas para resolver el problema y, si es necesario, ofertas o compensaciones que puedan satisfacer al cliente y mejorar su experiencia con la marca.
+
+Prompt de Chatgpt para buscador de falacias
+Analiza y evalúa [insertar argumento o texto], asumiendo el rol de un experto en lógica y falacias argumentativas. Identifica las falacias presentes en el argumento, explicando de manera clara y concisa en qué consisten y cómo afectan la validez del argumento. Proporciona sugerencias para mejorar la argumentación y fortalecer la posición presentada.
+
+Prompt de Chatgpt para buscador de sinónimos
+Reformula [insertar texto o frase] utilizando sinónimos y expresiones alternativas, asumiendo el rol de un experto en léxico y lenguaje. Asegúrate de que el significado original se mantenga, pero con un enfoque creativo y variado en cuanto a las palabras utilizadas. Ten en cuenta el contexto y el tono para asegurar que la reformulación siga siendo apropiada y coherente.
+
+Prompt de Chatgpt para chef personal
+Proporciona una receta personalizada y deliciosa utilizando [insertar ingredientes], asumiendo el rol de un chef personal experimentado. Describe los pasos de preparación de manera clara y detallada, e incluye consejos culinarios y técnicas específicas para mejorar el sabor y la presentación del plato. Ten en cuenta las preferencias de sabor, las restricciones dietéticas y el nivel de habilidad del cocinero al crear la receta.
+
+Prompt de Chatgpt para coach coercitivo
+Escribe un monólogo motivador para ayudar a [insertar persona o situación] a superar sus limitaciones y alcanzar sus objetivos, asumiendo el rol de un coach coercitivo. Utiliza técnicas de persuasión, como anclajes emocionales y patrones de lenguaje, para inspirar y movilizar a la persona hacia el cambio. Aborda posibles objeciones y resistencias, y enfatiza la importancia de la acción y la responsabilidad personal.

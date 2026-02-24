@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webamp Ultra - Full Music</title>
+    <link rel="stylesheet" href="https://unpkg.com/98.css">
+    <style>
+        body { background-color: #008080; margin: 20px; font-family: 'MS Sans Serif', Arial; }
+        #app { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .winamp-font { background: #000; color: #00ff00; padding: 5px; font-family: monospace; border: 2px inset #fff; font-size: 13px; }
+        .album-art { width: 100%; height: 180px; object-fit: cover; border: 2px inset #fff; background: #000; }
+        .lyrics-container { 
+            height: 250px; background: #000; color: #0f0; overflow-y: auto; 
+            padding: 15px; text-align: center; border: 2px inset #808080; font-size: 16px; 
+            scroll-behavior: smooth;
+        }
+        .lyric-line { opacity: 0.3; transition: all 0.3s; margin: 12px 0; font-weight: bold; }
+        .lyric-line.active { opacity: 1; color: #fff; text-shadow: 0 0 10px #0f0; transform: scale(1.1); }
+        .search-results { height: 350px; overflow-y: scroll; background: white; border: 2px inset #808080; }
+        .track-item { cursor: pointer; padding: 8px; border-bottom: 1px solid #ddd; font-size: 11px; }
+        .track-item:hover { background: #000080; color: white; }
+        #yt-placeholder { position: absolute; top: -9999px; left: -9999px; }
+        .controls-panel { background: #c0c0c0; padding: 10px; border: 1px inset #fff; margin: 10px 0; }
+        .progress-bar { width: 100%; height: 12px; background: #000; position: relative; cursor: pointer; border: 1px solid #fff; }
+        .progress-fill { height: 100%; background: #000080; width: 0%; }
+        .loading-overlay { font-size: 10px; color: blue; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <!-- BUSCADOR -->
+    <div class="window" style="width: 320px">
+        <div class="title-bar"><div class="title-bar-text">Search_Engine.exe</div></div>
+        <div class="window-body">
+            <div class="field-row">
+                <input v-model="query" @keyup.enter="searchMusic" type="text" style="width: 100%" placeholder="Artista o canción...">
+            </div>
+            <button @click="searchMusic" style="width: 100%; margin: 8px 0;" :disabled="loading">
+                {{ loading ? 'BUSCANDO...' : 'BUSCAR' }}
+            </button>
+            <div class="search-results">
+                <div v-for="track in results" :key="track.id" class="track-item" @click="playTrack(track)">
+                    <strong>{{ track.artist.name }}</strong><br>{{ track.title }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REPRODUCTOR -->
+    <div class="window" style="width: 480px">
+        <div class="title-bar"><div class="title-bar-text">Webamp Player - Audio Completo</div></div>
+        <div class="window-body">
+            <div class="winamp-font">
+                {{ currentTrack ? 'ON: ' + currentTrack.title : 'ESPERANDO...' }}
+            </div>
+            
+            <div style="display: flex; gap: 15px; margin-top:10px;">
+                <div style="width: 180px">
+                    <img v-if="currentTrack" :src="currentTrack.album.cover_big" class="album-art">
+                    <div v-else class="album-art"></div>
+                </div>
+                <div style="flex: 1">
+                    <div class="controls-panel">
+                        <div style="font-size: 10px; font-family: monospace; margin-bottom: 5px;">
+                            {{ formatTime(currentTime) }} / {{ formatTime(duration) }}
+                        </div>
+                        <div class="progress-bar" @click="seek">
+                            <div class="progress-fill" :style="{ width: (currentTime/duration * 100) + '%' }"></div>
+                        </div>
+                        <button @click="togglePlay" style="width: 100%; margin-top: 10px; font-weight: bold;">
+                            {{ isPlaying ? 'PAUSE' : 'PLAY' }}
+                        </button>
+                        <div v-if="status" class="loading-overlay">{{ status }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lyrics-container" ref="lyricsScroll">
+                <div v-for="(line, index) in lyrics" :key="index" :class="['lyric-line', { active: currentLineIndex === index }]">
+                    {{ line.text }}
+                </div>
+                <div v-if="currentTrack && lyrics.length === 0" style="margin-top: 80px">Buscando letra...</div>
+            </div>
+        </div>
+    </div>
+    <div id="yt-placeholder"></div>
+</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+
+<script>
+    const { createApp } = Vue;
+
+    // Lista de servidores de respaldo
+    const PIPED_INSTANCES = [
+        "https://pipedapi.kavin.rocks",
+        "https://pipedapi.leptons.xyz",
+        "https://pipedapi.moomoo.me",
+        "https://pipedapi.rivo.one",
+        "https://api-piped.mha.fi"
+    ];
+
+    createApp({
+        data() {
+            return {
+                query: '', results: [], currentTrack: null, lyrics: [],
+                currentLineIndex: -1, loading: false, isPlaying: false,
+                currentTime: 0, duration: 0, ytPlayer: null, status: ''
+            }
+        },
+        mounted() {
+            window.onYouTubeIframeAPIReady = () => {
+                this.ytPlayer = new YT.Player('yt-placeholder', {
+                    height: '0', width: '0',
+                    events: {
+                        'onStateChange': (e) => this.isPlaying = (e.data == 1),
+                        'onReady': () => setInterval(this.updateProgress, 400)
+                    }
+                });
+            };
+        },
+        methods: {
+            async searchMusic() {
+                if (!this.query) return;
+                this.loading = true;
+                try {
+                    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent('https://api.deezer.com/search?q=' + this.query)}`);
+                    const data = await res.json();
+                    this.results = data.data || [];
+                } catch (e) { alert("Error al buscar música"); }
+                this.loading = false;
+            },
+
+            async playTrack(track) {
+                this.currentTrack = track;
+                this.lyrics = [];
+                this.status = 'Localizando audio completo...';
+                
+                const searchStr = `${track.artist.name} ${track.title} official audio`;
+                let videoId = null;
+
+                // Intentar con múltiples servidores hasta encontrar uno que responda
+                for (let instance of PIPED_INSTANCES) {
+                    try {
+                        this.status = `Conectando a servidor...`;
+                        const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(instance + '/search?q=' + searchStr + '&filter=music_videos')}`);
+                        const data = await res.json();
+                        if (data.items && data.items.length > 0) {
+                            videoId = data.items[0].url.split("v=")[1];
+                            break; // ¡Éxito!
+                        }
+                    } catch (e) { console.warn(`Instancia ${instance} falló, probando la siguiente...`); }
+                }
+
+                if (videoId) {
+                    this.ytPlayer.loadVideoById(videoId);
+                    this.status = '';
+                    this.fetchLyrics(track);
+                } else {
+                    this.status = 'Error: No se encontró el audio. Intenta otra.';
+                }
+            },
+
+            async fetchLyrics(track) {
+                try {
+                    const res = await fetch(`https://lrclib.net/api/get?artist_name=${encodeURIComponent(track.artist.name)}&track_name=${encodeURIComponent(track.title)}`);
+                    const data = await res.json();
+                    if (data.syncedLyrics) this.parseLRC(data.syncedLyrics);
+                    else this.lyrics = [{time: 0, text: data.plainLyrics || "Letra no disponible"}];
+                } catch (e) { this.lyrics = [{time: 0, text: "Sin letra"}]; }
+            },
+
+            parseLRC(lrc) {
+                const result = [];
+                const reg = /\[(\d+):(\d+\.\d+)\]/;
+                lrc.split('\n').forEach(line => {
+                    const m = reg.exec(line);
+                    if (m) result.push({ time: parseFloat(m[1]) * 60 + parseFloat(m[2]), text: line.replace(reg, '').trim() });
+                });
+                this.lyrics = result;
+            },
+
+            updateProgress() {
+                if (this.ytPlayer && this.ytPlayer.getCurrentTime) {
+                    this.currentTime = this.ytPlayer.getCurrentTime();
+                    this.duration = this.ytPlayer.getDuration();
+                    const idx = this.lyrics.findIndex((l, i) => this.currentTime >= l.time && (!this.lyrics[i+1] || this.currentTime < this.lyrics[i+1].time));
+                    if (idx !== -1 && idx !== this.currentLineIndex) {
+                        this.currentLineIndex = idx;
+                        const activeLine = this.$refs.lyricsScroll.querySelectorAll('.lyric-line')[idx];
+                        if (activeLine) this.$refs.lyricsScroll.scrollTop = activeLine.offsetTop - 150;
+                    }
+                }
+            },
+
+            togglePlay() { this.isPlaying ? this.ytPlayer.pauseVideo() : this.ytPlayer.playVideo(); },
+            seek(e) { this.ytPlayer.seekTo(this.duration * (e.offsetX / e.currentTarget.offsetWidth)); },
+            formatTime(s) { 
+                if(!s) return "0:00";
+                return Math.floor(s/60) + ":" + Math.floor(s%60).toString().padStart(2, '0');
+            }
+        }
+    }).mount('#app');
+</script>
+</body>
+</html>
